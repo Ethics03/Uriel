@@ -25,6 +25,6 @@
 ### From source
 
 ```bash
-git clone https://github.com/your-username/uriel.git
-cd uriel
+git clone https://github.com/Ethics03/Uriel.git
+cd Uriel
 go build -o uriel
