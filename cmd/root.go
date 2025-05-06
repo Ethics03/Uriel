@@ -8,7 +8,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "uriel",
+	Use:   "Uriel",
 	Short: "Uriel, an AI-Powered API security scanner.",
 }
 
