@@ -4,7 +4,12 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
 
 	"github.com/spf13/cobra"
 )
@@ -16,7 +21,32 @@ var scanCmd = &cobra.Command{
 	Long: `Uriel is an API-Security Testing CLI-Tool that uses 
 	Llama-3 with tailored checks for seamless API performance.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Uriel is scanning your API.")
+		prompt := "Scan this API endpoint for basic security issues: https://api.example.com"
+
+		data := map[string]interface{}{
+			"model":  "llama3.2:latest",
+			"prompt": prompt,
+			"stream": false,
+		}
+
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			log.Fatalf("Failed to marshal request: %v", err)
+		}
+
+		resp, err := http.Post("http://localhost:11434/api/generate", "application/json", bytes.NewBuffer(jsonData))
+		if err != nil {
+			log.Fatalf("Failed to send request to Ollama: %v", err)
+		}
+		defer resp.Body.Close()
+
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatalf("Failed to read response: %v", err)
+		}
+
+		fmt.Println("Uriel (Llama 3.2) says:")
+		fmt.Println(string(body))
 	},
 }
 
