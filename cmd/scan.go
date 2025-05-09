@@ -7,15 +7,17 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 var (
-	targetURL string
-	authCheck bool
-	headers   []string
+	targetURL       string
+	authCheck       bool
+	headers         []string
+	requestBodyFile string
 )
 
 var requestBody string
@@ -34,6 +36,15 @@ var scanCmd = &cobra.Command{
 
 		var req *http.Request
 		var err error
+
+		if requestBodyFile != "" {
+			content, err := os.ReadFile(requestBodyFile)
+			if err != nil {
+				log.Fatalf("Failed to read body file: %v", err)
+			}
+			requestBody = string(content)
+		}
+
 		if requestBody != "" {
 			req, err = http.NewRequest("POST", targetURL, bytes.NewBuffer([]byte(requestBody)))
 		} else {
@@ -77,7 +88,7 @@ var scanCmd = &cobra.Command{
 						`, targetURL, resp.StatusCode, string(headersJSON), bodyStr)
 
 		if authCheck {
-			prompt = "check for authentication-related flaws such as missing tokens, insecure login flows, or improper access control."
+			prompt = "check for authentication-related flaws such as missing tokens, insecure login flows, or improper access control. Not more than 200 words"
 		}
 
 		data := map[string]interface{}{
@@ -122,6 +133,8 @@ func init() {
 	scanCmd.Flags().StringArrayVar(&headers, "header", []string{}, "Custom headers in 'Key: Value' format")
 
 	scanCmd.Flags().StringVar(&requestBody, "body", "", "Optional JSON body to include in the request")
+
+	scanCmd.Flags().StringVar(&requestBodyFile, "body-file", "", "Path to JSON file to use as request body")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
