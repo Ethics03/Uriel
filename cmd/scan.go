@@ -92,7 +92,7 @@ var scanCmd = &cobra.Command{
 		}
 
 		data := map[string]interface{}{
-			"model":  "llama3.2:latest",
+			"model":  "llama3",
 			"prompt": prompt,
 			"stream": false,
 		}
